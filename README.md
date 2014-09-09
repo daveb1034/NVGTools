@@ -19,4 +19,7 @@ have been tested against a number of different converters and work well. There i
 coordinate strings returned if the x or y coordinate is less than 10000. There is a qquick fix in place but it needs
 more work.
 
+Update
+======
 
+I now have access to versions 1.4/1.5 and 2.0 of the NVG schema my intent is to replace the current code with more robust versions that handle all NVG features and will read and write into ESRI. This will include symbolgy including APP6a. If possible feature templates in ArcGIS will be used to generate APP6 symbol codes and modifers for a limited subset of symbols.
