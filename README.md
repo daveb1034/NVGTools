@@ -23,3 +23,5 @@ Update
 ======
 
 I now have access to versions 1.4/1.5 and 2.0 of the NVG schema my intent is to replace the current code with more robust versions that handle all NVG features and will read and write into ESRI. This will include symbolgy including APP6a. If possible feature templates in ArcGIS will be used to generate APP6 symbol codes and modifers for a limited subset of symbols.
+
+Moved python toolbox to the archive folder, new tools will be created soon
