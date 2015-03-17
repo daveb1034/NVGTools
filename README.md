@@ -6,7 +6,7 @@ NATO Vector Graphic Tools.
 This tool was developed in response to a customer request working with NVG files created in iGeoSit.
 
 The tool will take version 0.3, 1.4 and 1.5 of NVG and create points, lines and polygons within a 
-ESRI fiel geodatabase.
+ESRI file geodatabase.
 
 The code is not the most efficient and I have a lot of tidying up to do. It was created in about half a day to 
 get a working solution out to the customer.
