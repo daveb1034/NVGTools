@@ -53,8 +53,7 @@ class Reader(object):
         self.esriPoint = None
         return
     def _point(self):
-        """Reads all points from the given tree, an instance of ElementTree with
-        an xml file parsed in.
+        """Reads all points from the given nvg document object.
         """
         # get the namespace for the file. need to try with mulitple namespaces
         #print self.dom.documentElement.namespaceURI
