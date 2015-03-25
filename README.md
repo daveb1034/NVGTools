@@ -1,27 +1,16 @@
 NVGTools
 ========
 
-NATO Vector Graphic Tools.
+The NATO Vector Graphics format was developed as a means for NATO systems to share and use overlays. The format is based on SVG.
 
-This tool was developed in response to a customer request working with NVG files created in iGeoSit.
+## nvgReader.py ##
 
-The tool will take version 0.3, 1.4 and 1.5 of NVG and create points, lines and polygons within a 
-ESRI file geodatabase.
+Provides a means to read a nvg file and output feature classes to a file geodatabase.
 
-The code is not the most efficient and I have a lot of tidying up to do. It was created in about half a day to 
-get a working solution out to the customer.
+This code is in active development and a beta release is targeted for early May 2015. This will focus on reading nvg version 1.4.0 into file geodatabases.
 
-I will update as often as I can but please feel free to take the code and use / improve.
+Future versions will be supported as the tools develop. In addition a means to write nvg from file geodatabase will be developed.
 
-There are a number of functions added within the .pyt file that convert between lat/lon and MGRS / UTM. These 
-are a port of some vba modules I used before and I have little understanding of the maths behind. The results 
-have been tested against a number of different converters and work well. There is a small glitch with invalid MGRS 
-coordinate strings returned if the x or y coordinate is less than 10000. There is a qquick fix in place but it needs
-more work.
+## Contributing ##
 
-Update
-======
-
-I now have access to versions 1.4/1.5 and 2.0 of the NVG schema my intent is to replace the current code with more robust versions that handle all NVG features and will read and write into ESRI. This will include symbolgy including APP6a. If possible feature templates in ArcGIS will be used to generate APP6 symbol codes and modifers for a limited subset of symbols.
-
-Moved python toolbox to the archive folder, new tools will be created soon
+Please feel free to contribute to the code. I am happy to include ideas people may have for additional functionality. The best way to do this is to either use the fork and pull workflow or raise an issue and I will attempt to add the required functionality.
