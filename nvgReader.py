@@ -43,6 +43,7 @@ class Reader(object):
         # parse the nvgFile
         self.dom = xml.dom.minidom.parse(self.nvgFile)
         # get the nvg version
+        # consider moving this to a seperate method
         self.version = self.dom.documentElement.getAttribute("version")
 
         # need to define the outputs based on the datatypes in the nvg
@@ -51,6 +52,13 @@ class Reader(object):
         self.esriPoint = None
         self.esriSpatialReference = arcpy.SpatialReference(4326)
         return
+
+
+    def _getElement(self,tag):
+        """Return all elements with given tag.
+        """
+        return self.dom.getElementsByTagName(tag)
+
     def _point(self):
         """Reads points with parent node of nvg.
 
@@ -64,7 +72,7 @@ class Reader(object):
         self.esriPoint = []
 
         # get all the points
-        points = self.dom.getElementsByTagName("point")
+        points = self._getElement("point")
 
         # extract the attributes and add to the esriPoint
         for point in points:
@@ -91,7 +99,8 @@ class Reader(object):
                     continue
                 # get the optional attributes
                 try:
-                    modifiers = point.getAttribute('modifier') # spec spells it as modifiers, sample data uses modifier
+                    # spec spells it as modifiers, sample data uses modifier
+                    modifiers = point.getAttribute('modifier')
                     if not modifiers == '':
                         newPoint.append(modifiers)
                     else:
@@ -168,6 +177,8 @@ class Reader(object):
             template = os.path.join(gdb,'nvgPoint')
             fcName = arcpy.CreateUniqueName('nvgPoint',workspace)
             fc = arcpy.Copy_management(template,os.path.join(workspace,fcName))
+            # TODO this needs a better solution as it should detect fields
+            # in a feature class and then build the list dynamically??
             fields = ['SHAPE@','symbol_encoding','symbol_code','modifier','uri',
                     'label','style','course','speed']
 
