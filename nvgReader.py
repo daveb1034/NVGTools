@@ -24,9 +24,10 @@ import xml.dom.minidom
 # version 1.4 namespaces
 # this may not be needed if so it will be deleted
 namespaces = {'nvg':'http://tide.act.nato.int/schemas/2008/10/nvg'}
+
 # need to handle file paths passed to the scrip that have \t etc in the path
 # by default this is not handled correctly
-nvg = r"R:\Tasking\NVGTools\testData\nvg_1_4\APP6A_SAMPLE.nvg"
+nvg = r"E:\Google Drive\NVG\nvg_1_4\APP6A_SAMPLE.nvg"
 
 # the following section details all the attrbiutes assocaitated with each nvg
 # object. Each object has a set of mandatory and optional attributes. If stated
@@ -36,21 +37,26 @@ nvg = r"R:\Tasking\NVGTools\testData\nvg_1_4\APP6A_SAMPLE.nvg"
 
 # dictionary of mandatory fields for each NVG feature
 # <a>, <g> and <composite> features not yet implemented
-features = {'point':['x','y','symbol','modifier','uri','label','style','course',
+# may need to move this into the class to enable access when the file is imported
+# into other code
+
+features = {'point':['x','y','symbol','modifiers','uri','label','style','course',
             'speed'],
             'text':['content','x','y','rotation','uri','style'],
-            'multipoint':['points','symbol','modifier','uri','label','style'],
-            'circle':['cx','cy','r','uri','label','style','symbol','modifier'],
+            'multipoint':['points','symbol','modifiers','uri','label','style'],
+            'circle':['cx','cy','r','uri','label','style','symbol','modifiers'],
             'ellipse':['cx','cy','rx','ry','rotation','uri','label','style',
-            'modifier','course','speed','symbol'],
-            'polyline':['points','uri','label','style','symbol','modifier'],
+            'modifiers','course','speed','symbol'],
+            'polyline':['points','uri','label','style','symbol','modifiers'],
             'corridor':['points','width','minaltitude','maxaltitude','uri',
-            'label','style','symbol','modifier'],
-            'polygon':['points','uri','label','style','symbol','modifier'],
+            'label','style','symbol','modifiers'],
+            'polygon':['points','uri','label','style','symbol','modifiers'],
             'arc':['cx','cy','course','speed','rotation','startangle','endangle',
-            'uri','label','style','symbol','modifier'],
+            'uri','label','style','symbol','modifiers'],
             'arcband':['cx','cy','minr','maxr','startangle','endangle','uri',
-            'label','style','symbol','modifier']}
+            'label','style','symbol','modifiers']}
+
+# need to map nvg geometry to ESRI geometry types.
 
 class Reader(object):
     """NATO Vector Graphic Reader instance. Reads and processes a NATO Vector
@@ -80,103 +86,24 @@ class Reader(object):
         """
         return self.dom.getElementsByTagName(tag)
 
-    def _point(self):
-        """Reads points with parent node of nvg.
-        All points within the nvg file that have the parent node nvg are read
-        and the geometries created and stored in self.esriPoint.
-        Any point nods that are part of a composite symbol or a or g node are
-        ignored.
+    def _getAttribute(self,element,attribute):
+        """Return value for given attribute for the element.
+
+        element must be an instance of an element. For example
+        element = self._getElement(tag) where tag is the nvg feature to extract.
         """
-        # get the namespace for the file. need to try with mulitple namespaces
-        #print self.dom.documentElement.namespaceURI
-        self.esriPoint = []
+        return element.getAttribute(attribute)
 
-        # get all the points
-        points = self._getElement("point")
+    def _readFeature(self,featureType):
+        """Return a complete NVG feature as a python list.
 
-        # extract the attributes and add to the esriPoint
-        for point in points:
-            newPoint = []
-            # only load points that are not part of composite symbols or members
-            # a or g tags. The parent node should be <nvg>
-            if not point.parentNode.nodeName == 'nvg':
-                continue
-            else:
-                try:
-                    x = float(point.getAttribute('x'))
-                    y = float(point.getAttribute('y'))
-
-                    # create the point geometry
-                    pnt = arcpy.Point(x,y)
-                    pntGeom = arcpy.PointGeometry(pnt)
-                    newPoint.append(pntGeom)
-                    symbol = point.getAttribute('symbol').split(':')
-                    newPoint.append(symbol)
-                except:
-                    # if any of the mandatory attributes are missing log it and continue
-                    # to next point
-                    print "invalid point instance, mandatory atribute missing"
-                    continue
-                # get the optional attributes
-                try:
-                    # spec spells it as modifiers, sample data uses modifier
-                    modifiers = point.getAttribute('modifier')
-                    if not modifiers == '':
-                        newPoint.append(modifiers)
-                    else:
-                        newPoint.append(None)
-                except:
-                    newPoint.append(None)
-
-                try:
-                    uri = point.getAttribute('uri')
-                    if not uri == '':
-                        newPoint.append(uri)
-                    else:
-                        newPoint.append(None)
-                except:
-                    newPoint.append(None)
-
-                try:
-                    label = point.getAttribute('label')
-                    if not label == '':
-                        newPoint.append(label)
-                    else:
-                        newPoint.append(None)
-                except:
-                    newPoint.append(None)
-
-                try:
-                    style = point.getAttribute('style')
-                    if not style == '':
-                        newPoint.append(style)
-                    else:
-                        newPoint.append(None)
-                except:
-                    newPoint.append(None)
-
-                try:
-                    course = point.getAttribute('course')
-                    if not course == '':
-                        newPoint.append(float(course))
-                    else:
-                        newPoint.append(None)
-                except:
-                    newPoint.append(None)
-
-                try:
-                    speed = point.getAttribute('speed')
-                    if not speed == '':
-                        newPoint.append(float(speed))
-                    else:
-                        newPoint.append(None)
-                except:
-                    newPoint.append(None)
-
-                self.esriPoint.append(newPoint)
-
-        return self.esriPoint
+        featureType must be a valid NVG feature type and defined in the features
+        dictionary.
+        """
+        return
 
 if __name__ =="__main__":
     read = Reader(nvg,namespaces)
-    test = read._point()
+    elements = read._getElement('point')
+    print read._getAttribute(elements[0],'modifier')
+
