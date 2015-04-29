@@ -86,24 +86,104 @@ class Reader(object):
         """
         return self.dom.getElementsByTagName(tag)
 
-    def _getAttribute(self,element,attribute):
-        """Return value for given attribute for the element.
-
-        element must be an instance of an element. For example
-        element = self._getElement(tag) where tag is the nvg feature to extract.
+    def _readPoint(self):
+        """Reads points with parent node of nvg.
+        All points within the nvg file that have the parent node nvg are read
+        and the geometries created and stored in self.esriPoint.
+        Any point nods that are part of a composite symbol or a or g node are
+        ignored.
         """
-        return element.getAttribute(attribute)
+        # get the namespace for the file. need to try with mulitple namespaces
+        #print self.dom.documentElement.namespaceURI
+        self.esriPoint = []
 
-    def _readFeature(self,featureType):
-        """Return a complete NVG feature as a python list.
+        # get all the points
+        points = self._getElement("point")
 
-        featureType must be a valid NVG feature type and defined in the features
-        dictionary.
-        """
-        return
+        # extract the attributes and add to the esriPoint
+        for point in points:
+            newPoint = []
+            # only load points that are not part of composite symbols or members
+            # a or g tags. The parent node should be <nvg>
+            if not point.parentNode.nodeName == 'nvg':
+                continue
+            else:
+                try:
+                    x = float(point.getAttribute('x'))
+                    y = float(point.getAttribute('y'))
+
+                    # create the point geometry
+                    pnt = (x,y)
+                    newPoint.append(pnt)
+                    symbol = point.getAttribute('symbol').split(':')
+                    newPoint.append(symbol)
+                except:
+                    # if any of the mandatory attributes are missing log it and continue
+                    # to next point
+                    print "invalid point instance, mandatory atribute missing"
+                    continue
+                # get the optional attributes
+                try:
+                    # spec spells it as modifiers, sample data uses modifier
+                    modifiers = point.getAttribute('modifier')
+                    if not modifiers == '':
+                        newPoint.append(modifiers)
+                    else:
+                        newPoint.append(None)
+                except:
+                    newPoint.append(None)
+
+                try:
+                    uri = point.getAttribute('uri')
+                    if not uri == '':
+                        newPoint.append(uri)
+                    else:
+                        newPoint.append(None)
+                except:
+                    newPoint.append(None)
+
+                try:
+                    label = point.getAttribute('label')
+                    if not label == '':
+                        newPoint.append(label)
+                    else:
+                        newPoint.append(None)
+                except:
+                    newPoint.append(None)
+
+                try:
+                    style = point.getAttribute('style')
+                    if not style == '':
+                        newPoint.append(style)
+                    else:
+                        newPoint.append(None)
+                except:
+                    newPoint.append(None)
+
+                try:
+                    course = point.getAttribute('course')
+                    if not course == '':
+                        newPoint.append(float(course))
+                    else:
+                        newPoint.append(None)
+                except:
+                    newPoint.append(None)
+
+                try:
+                    speed = point.getAttribute('speed')
+                    if not speed == '':
+                        newPoint.append(float(speed))
+                    else:
+                        newPoint.append(None)
+                except:
+                    newPoint.append(None)
+
+                self.esriPoint.append(newPoint)
+
+        return self.esriPoint
 
 if __name__ =="__main__":
     read = Reader(nvg,namespaces)
-    elements = read._getElement('point')
-    print read._getAttribute(elements[0],'modifier')
+    test = read._readPoint()
+
 
