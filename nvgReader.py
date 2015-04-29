@@ -34,6 +34,9 @@ nvg = r"R:\Tasking\NVGTools\testData\nvg_1_4\APP6A_SAMPLE.nvg"
 # attributes are currently ignored. Tuples for each are stored with a flag of
 # o or m for optioanl and mandatory
 
+# dictionary of mandatory fields for each NVG feature
+features = {'point':['x','y','symbol','modifiers','uri','label','style']}
+
 class Reader(object):
     """NATO Vector Graphic Reader instance. Reads and process a NATO Vector
     Graphic to ESRI Geometry.
