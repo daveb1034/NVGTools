@@ -182,8 +182,89 @@ class Reader(object):
 
         return self.esriPoint
 
+    def _readPolyline(self):
+        """Reads polylines with parent node of nvg.
+        All polylines within the nvg file that have the parent node nvg are read
+        and the geometries created and stored in self.esriPolyline.
+        Any polyline nodes that are part of a composite symbol or a or g node are
+        ignored.
+        """
+        # get the namespace for the file. need to try with mulitple namespaces
+        #print self.dom.documentElement.namespaceURI
+        self.esriPolyline = []
+
+        # get all the polylines
+        polylines = self._getElement("polyline")
+
+        # extract the attributes and add to the esriPolyline
+        for polyline in polylines:
+            newPolyline = []
+            # only load polylines that are not part of composite symbols or members
+            # a or g tags. The parent node should be <nvg>
+            if not polyline.parentNode.nodeName == 'nvg':
+                continue
+            else:
+                try:
+                    # read the points and create the list of points
+                    strPoints = polyline.getAttribute('points')
+                    # get a list of coord pairs from the string
+                    # as [[x1,y1],[x2,y2],...]
+                    listPoints = [p.split(",") for p in strPoints.rstrip().split(" ")]
+                    # convert each coord to float for later use.
+                    points = [[float(x) for x in row] for row in listPoints]
+                    newPolyline.append(points)
+                    symbol = polyline.getAttribute('symbol').split(':')
+                    newPolyline.append(symbol)
+                except:
+                    # if any of the mandatory attributes are missing log it and continue
+                    # to next polyline
+                    print "invalid polyline instance, mandatory atribute missing"
+                    continue
+                # get the optional attributes
+                try:
+                    # spec spells it as modifiers, sample data uses modifier
+                    modifiers = polyline.getAttribute('modifier')
+                    if not modifiers == '':
+                        newPolyline.append(modifiers)
+                    else:
+                        newPolyline.append(None)
+                except:
+                    newPolyline.append(None)
+
+                try:
+                    uri = polyline.getAttribute('uri')
+                    if not uri == '':
+                        newPolyline.append(uri)
+                    else:
+                        newPolyline.append(None)
+                except:
+                    newPolyline.append(None)
+
+                try:
+                    label = polyline.getAttribute('label')
+                    if not label == '':
+                        newPolyline.append(label)
+                    else:
+                        newPolyline.append(None)
+                except:
+                    newPolyline.append(None)
+
+                try:
+                    style = polyline.getAttribute('style')
+                    if not style == '':
+                        newPolyline.append(style)
+                    else:
+                        newPolyline.append(None)
+                except:
+                    newPolyline.append(None)
+
+                self.esriPolyline.append(newPolyline)
+
+        return self.esriPolyline
+
 if __name__ =="__main__":
     read = Reader(nvg,namespaces)
     test = read._readPoint()
+    read._readPolyline()
 
 
