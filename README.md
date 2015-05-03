@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/daveb1034/NVGTools.png?label=ready&title=Ready)](https://waffle.io/daveb1034/NVGTools)
 NVGTools
 ========
 
