@@ -1,4 +1,5 @@
 [![Stories in Ready](https://badge.waffle.io/daveb1034/NVGTools.png?label=ready&title=Ready)](https://waffle.io/daveb1034/NVGTools)
+[![Stories in Progress](https://badge.waffle.io/daveb1034/NVGTools.png?label=in%20progress&title=In%20Progress)](https://waffle.io/daveb1034/NVGTools)
 
 NVGTools
 ========
