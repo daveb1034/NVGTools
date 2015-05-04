@@ -1,6 +1,10 @@
-[![Stories in Backlog](https://badge.waffle.io/daveb1034/NVGTools.png?label=backlog&title=In%20Backlog)](https://waffle.io/daveb1034/NVGTools)
+[![Planned Issues](https://badge.waffle.io/daveb1034/NVGTools.png?label=0%20-%20backlog&title=In%20Backlog)](https://waffle.io/daveb1034/NVGTools)
+[![Issues in Progress](https://badge.waffle.io/daveb1034/NVGTools.png?label=2%20-%20In%20Progress&title=In%20Progress)](https://waffle.io/daveb1034/NVGTools)
+
+
+
 [![Stories in Ready](https://badge.waffle.io/daveb1034/NVGTools.png?label=ready&title=Ready)](https://waffle.io/daveb1034/NVGTools)
-[![Stories in Progress](https://badge.waffle.io/daveb1034/NVGTools.png?label=progress&title=In%20Progress)](https://waffle.io/daveb1034/NVGTools)
+
 NVGTools
 ========
 
