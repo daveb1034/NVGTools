@@ -10,9 +10,11 @@ The NATO Vector Graphics format was developed as a means for NATO systems to sha
 
 Provides a means to read a nvg file and output feature classes to a file geodatabase.
 
-This code is in active development and a beta release is targeted for early May 2015. This will focus on reading nvg version 1.4.0 into file geodatabases.
+This code is in active development and a release will be provided soon. This will focus on reading nvg version 1.4.0 into file geodatabases.
 
-Future versions will be supported as the tools develop. In addition a means to write nvg from file geodatabase will be developed.
+I have a few change of directions on the best way to read the NVG format. It has some pretty awkward concepts but I am pretty much there on the basic implementation points.
+
+Future versions will be supported as the tools develop. In addition a means to write nvg from file geodatabase will be developed. It is likely that reading from a file geodatabase will be achieved through the use of feature templates.
 
 ## Contributing ##
 
