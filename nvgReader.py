@@ -78,9 +78,10 @@ class Reader(object):
         self.version = self.dom.documentElement.getAttribute("version")
 
         # need to define the outputs based on the datatypes in the nvg
-        self.esriPolygon = None
-        self.esriPolyline = None
-        self.esriPoint = None
+        self.esriPolygon = []
+        self.esriPolyline = []
+        self.esriPoint = []
+        self.esriMultiPoint = []
 
         # define Spatial Reference Objects
         self.wgs84 = arcpy.SpatialReference(4326)
@@ -94,27 +95,91 @@ class Reader(object):
         """
         return self.dom.getElementsByTagName(tag)
 
-    def _readGeometry(self,tag):
-        """read geometry from NVG Element.
-
-        Extracts the geometry of each NVG element and returns an appropriate
-        ESRI geometry object of POINT, POLYLINE or POLYGON.
+    def _cleanPoints(self,points):
+        """Cleans a string of point coordinate pairs and returns a list of
+        numerical coordinate pairs
         """
-        # read point and text elements
-        if tag in ['text','point']:
-            element = self._getElement(tag)
-            x = element.getAttribute("x")
-            y = element.getAttribute("y")
+        # get a list of coord pairs as strings from points
+        # [['x1','y1'],['x2','y2'],[...]]
+        listPoints = [p.split(",") for p in points.rstrip().split(" ")]
 
-            pnt = arcpy.Point(x,y)
+        # convert each coord to float
+        fPoints = [[float(x) for x in row] for row in listPoints]
 
+        return fPoints
 
+    def _buildPoint(self,x,y):
+        """build a point geometry from x,y coordinates.
+        """
+        # construct the geometry
+        pnt = arcpy.Point(x,y)
+        pGeom = arcpy.PointGeometry(pnt,self.wgs84)
 
+        return pGeom
+
+    def _buildMulitPoint(self,points):
+        """builds a multipoint geometry from a string of points.
+        """
+        cPoints = self._cleanPoints(points)
+
+        # array to hold point objects
+        array = arcpy.Array
+
+        for point in cPoint:
+            pnt = arcpy.Point()
+            pnt.X = point[0]
+            pnt.Y = point[1]
+            array.add(pnt)
+
+        mGeom = arcpy.Multipoint(array,self.wgs84)
+
+        return mGeom
+
+    def _buildPolyline(self,points):
+        """builds a polyline geometry from a string of points.
+        """
+        cPoints = self._cleanPoints(points)
+
+        # array to hold point objects
+        array = arcpy.Array
+
+        for point in cPoint:
+            pnt = arcpy.Point()
+            pnt.X = point[0]
+            pnt.Y = point[1]
+            array.add(pnt)
+
+        lGeom = arcpy.Polyline(array,self.wgs84)
+
+        return lGeom
+
+    def _buildPolygon(self,points):
+        """builds a polygon geometry from a string of points.
+        """
+        cPoints = self._cleanPoints(points)
+
+        # array to hold point objects
+        array = arcpy.Array
+
+        for point in cPoint:
+            pnt = arcpy.Point()
+            pnt.X = point[0]
+            pnt.Y = point[1]
+            array.add(pnt)
+
+        polyGeom = arcpy.Polygon(array,self.wgs84)
+
+        return polyGeom
+
+    def readAll(self):
+        """Helper function to read all feature types in a NVG document.
+        """
         return True
 
 if __name__ =="__main__":
-    read = Reader(nvg,namespaces)
-    test = read._readGeometry("point")
+    reader = Reader(nvg,namespaces)
+
+
 
 
 
