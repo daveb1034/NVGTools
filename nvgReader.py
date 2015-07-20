@@ -117,9 +117,11 @@ class Reader(object):
 
         return pGeom
 
-    def _buildMulitPoint(self,points):
-        """builds a multipoint geometry from a string of points.
+    def _buildGeometry(self,points,geometry_type):
+        """Builds the relevant geometry from a string of points based on the
+        geometry_type.
         """
+        # clean the point string
         cPoints = self._cleanPoints(points)
 
         # array to hold point objects
@@ -131,45 +133,92 @@ class Reader(object):
             pnt.Y = point[1]
             array.add(pnt)
 
-        mGeom = arcpy.Multipoint(array,self.wgs84)
+        if geometry_type == 'POLYGON':
+            geom = arcpy.Polygon(array,self.wgs84)
+        elif geometry_type == 'POLYLINE':
+            geom = arcpy.Polyline(array,self.wgs84)
+        elif geometry_type == 'MULITPOINT':
+            geom = arcpy.Multipoint(array,self.wgs84)
 
-        return mGeom
+        return geom
 
-    def _buildPolyline(self,points):
-        """builds a polyline geometry from a string of points.
-        """
-        cPoints = self._cleanPoints(points)
+## replacing all the commented code below with the single method _buildGeometry
+## special feature types such as arc, arcband, ellipse and circle will generate a string
+## of cooridnates and pass to the _buildGeometry method with the relevant geometry_type
 
-        # array to hold point objects
-        array = arcpy.Array
+##    def _buildMulitPoint(self,points):
+##        """builds a multipoint geometry from a string of points.
+##        """
+##        cPoints = self._cleanPoints(points)
+##
+##        # array to hold point objects
+##        array = arcpy.Array
+##
+##        for point in cPoint:
+##            pnt = arcpy.Point()
+##            pnt.X = point[0]
+##            pnt.Y = point[1]
+##            array.add(pnt)
+##
+##        mGeom = arcpy.Multipoint(array,self.wgs84)
+##
+##        return mGeom
+##
+##    def _buildPolyline(self,points):
+##        """builds a polyline geometry from a string of points.
+##        """
+##        cPoints = self._cleanPoints(points)
+##
+##        # array to hold point objects
+##        array = arcpy.Array
+##
+##        for point in cPoint:
+##            pnt = arcpy.Point()
+##            pnt.X = point[0]
+##            pnt.Y = point[1]
+##            array.add(pnt)
+##
+##        lGeom = arcpy.Polyline(array,self.wgs84)
+##
+##        return lGeom
+##
+##    def _buildPolygon(self,points):
+##        """builds a polygon geometry from a string of points.
+##        """
+##        cPoints = self._cleanPoints(points)
+##
+##        # array to hold point objects
+##        array = arcpy.Array
+##
+##        for point in cPoint:
+##            pnt = arcpy.Point()
+##            pnt.X = point[0]
+##            pnt.Y = point[1]
+##            array.add(pnt)
+##
+##        polyGeom = arcpy.Polygon(array,self.wgs84)
+##
+##        return polyGeom
 
-        for point in cPoint:
-            pnt = arcpy.Point()
-            pnt.X = point[0]
-            pnt.Y = point[1]
-            array.add(pnt)
 
-        lGeom = arcpy.Polyline(array,self.wgs84)
+    # ellipse builder will be able to build ellipses and arcs just need to sort
+    # the code out. this will amalgamate into a single method
+    def _buildEllipse(self,cx,cy,rx,ry,rotation):
+        points = ''
+        return points
 
-        return lGeom
+    def _buildArc(self,cx,cy,rotation,startangle,endangle):
+        points = ''
+        return points
+    # circle builder will be able to build circles and arcbands just need to sort
+    # the code out. this will amalgamate into a single method
+    def _buildCircle(self,cx,cy,r):
+        points = ''
+        return points
 
-    def _buildPolygon(self,points):
-        """builds a polygon geometry from a string of points.
-        """
-        cPoints = self._cleanPoints(points)
-
-        # array to hold point objects
-        array = arcpy.Array
-
-        for point in cPoint:
-            pnt = arcpy.Point()
-            pnt.X = point[0]
-            pnt.Y = point[1]
-            array.add(pnt)
-
-        polyGeom = arcpy.Polygon(array,self.wgs84)
-
-        return polyGeom
+    def _buildArcband(self,cx,cy,r1,r2,startangle,endangle):
+        points = ''
+        return points
 
     def readAll(self):
         """Helper function to read all feature types in a NVG document.
