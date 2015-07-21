@@ -200,15 +200,42 @@ class Reader(object):
 ##
 ##        return polyGeom
 
+    def _pointString(self,points):
+        """Returns a string in the format required by NVG for point coordinates.
 
-    # ellipse builder will be able to build ellipses and arcs just need to sort
-    # the code out. this will amalgamate into a single method
-    def _buildEllipse(self,cx,cy,rx,ry,rotation):
-        points = ''
+        This method is used to parse the output of _buildElliptical and _buildCircular
+        into a format used by the geometry construction methods.
+        """
+        s = ''
+        for pnt in points:
+            pnt = str(pnt).strip('[]')
+            s = s + pnt + " "
+
         return points
 
-    def _buildArc(self,cx,cy,rotation,startangle,endangle):
-        points = ''
+    def _buildElliptical(self,cx,cy,rotation,startangle=0,endangle=360):
+        """Generates a set of oint cordinaets at describe an ellipse or an arc.
+
+        Coordinates need to be projected before using the tools.
+        """
+        points = []
+
+        rotation = math.radians(rotation)
+        step = 1
+
+        # generate points and rotate
+        for theata in range(startangle,endangle,step):
+            #caclulate points on the ellipse
+            theata = math.radians(theata)
+            X = rx * math.cos(theata)
+            Y = ry * math.sin(theata)
+
+            # rotate point aund the centre
+            X = cx + X * math.cos(rotation) + Y * math.sin(rotation)
+            Y = cy - X * math.sin(rotation) + Y * math.cos(rotation)
+
+            points.apend([X,Y])
+
         return points
     # circle builder will be able to build circles and arcbands just need to sort
     # the code out. this will amalgamate into a single method
