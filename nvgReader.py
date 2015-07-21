@@ -213,7 +213,7 @@ class Reader(object):
 
         return points
 
-    def _buildElliptical(self,cx,cy,rotation,startangle=0,endangle=360):
+    def _buildElliptical(self,cx,cy,rx,ry,rotation,startangle=0,endangle=360):
         """Generates a set of oint cordinaets at describe an ellipse or an arc.
 
         Coordinates need to be projected before using the tools.
