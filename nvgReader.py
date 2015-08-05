@@ -214,7 +214,7 @@ class Reader(object):
         return points
 
     def _buildElliptical(self,cx,cy,rx,ry,rotation,startangle=0,endangle=360):
-        """Generates a set of oint cordinaets at describe an ellipse or an arc.
+        """Generates a set of point cordinates that describe an ellipse or an arc.
 
         Coordinates need to be projected before using the tools.
         """
@@ -239,10 +239,16 @@ class Reader(object):
         return points
     # circle builder will be able to build circles and arcbands just need to sort
     # the code out. this will amalgamate into a single method
+    
+    
     def _buildCircle(self,cx,cy,r):
         points = ''
         return points
-
+    
+    # the build arcband will have default values that will be used
+    # to generate either a circle or an arc. By default the r2,
+    # start and end angles will be set to 0 only the cx, cy and r1
+    # are required.
     def _buildArcband(self,cx,cy,r1,r2,startangle,endangle):
         points = ''
         return points
