@@ -108,6 +108,13 @@ class Reader(object):
 
         return fPoints
 
+    def _projectGeometry(geometry, spatial_refernce):
+        """Projects the input geometry into the spatial_reference
+        """
+        projected = geometry.projectAs(spatial_refernce)
+
+        return projected
+
     def _buildPoint(self,x,y):
         """build a point geometry from x,y coordinates.
         """
@@ -251,14 +258,18 @@ class Reader(object):
 
         The radius needs to be in the same units as the cx,cy location.
         """
+        # may need to move the projection code to a seperate method as it will
+        # need to be done multiple times
+
         # project the point to world mercator
         pGeom_wgs84 = arcpy.PointGeometry(arcpy.Point(cx,cy),self.wgs84)
-        pGeom_WM = pGeom_wgs84.projectAs(self.world_merc)
+        pGeom_WM = self._projectGeometry(pGeom_wgs84,self.world_merc)
 
         # buffer the point by the radius
         polygon_wm = pGeom_WM.buffer(r)
         # return the polygon in wgs84 geographics
-        polygon = polygon_wm.projectAs(self.wgs84)
+        polygon = self._projectGeometry(polygon_wm,self.wgs84)
+
         return polygon
 
     # the build arcband will have default values that will be used
@@ -266,6 +277,8 @@ class Reader(object):
     # start and end angles will be set to 0 only the cx, cy and r1
     # are required.
     def _buildArcband(self,cx,cy,r1,r2,startangle,endangle):
+        """Builds a circle
+        """
         points = ''
         return points
 
