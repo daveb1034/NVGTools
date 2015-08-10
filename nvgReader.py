@@ -120,6 +120,11 @@ class Reader(object):
     def _buildGeometry(self,points,geometry_type):
         """Builds the relevant geometry from a string of points based on the
         geometry_type.
+
+        Valid Geometyr Types are:
+            POLYGON
+            POLYLINE
+            MULTIPOINT
         """
         # clean the point string
         cPoints = self._cleanPoints(points)
@@ -239,12 +244,23 @@ class Reader(object):
         return points
     # circle builder will be able to build circles and arcbands just need to sort
     # the code out. this will amalgamate into a single method
-    
-    
+
+
     def _buildCircle(self,cx,cy,r):
-        points = ''
-        return points
-    
+        """Returns arcpy.Polygon circle from the cx, cy and radius.
+
+        The radius needs to be in the same units as the cx,cy location.
+        """
+        # project the point to world mercator
+        pGeom_wgs84 = arcpy.PointGeometry(arcpy.Point(cx,cy),self.wgs84)
+        pGeom_WM = pGeom_wgs84.projectAs(self.world_merc)
+
+        # buffer the point by the radius
+        polygon_wm = pGeom_WM.buffer(r)
+        # return the polygon in wgs84 geographics
+        polygon = polygon_wm.projectAs(self.wgs84)
+        return polygon
+
     # the build arcband will have default values that will be used
     # to generate either a circle or an arc. By default the r2,
     # start and end angles will be set to 0 only the cx, cy and r1
