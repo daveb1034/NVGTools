@@ -110,6 +110,8 @@ class Reader(object):
 
     def _projectGeometry(geometry, spatial_refernce):
         """Projects the input geometry into the spatial_reference
+        
+        THis is used to ensure the maths works on the geometry functions
         """
         projected = geometry.projectAs(spatial_refernce)
 
