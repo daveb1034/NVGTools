@@ -43,23 +43,11 @@ nvg = r"E:\Google Drive\NVG\nvg_1_4\APP6A_SAMPLE.nvg"
 # into other code
 # this will utilise has parent etc from mindom
 
-features = {'point':['x','y','symbol','modifiers','uri','label','style','course',
-            'speed'],
-            'text':['content','x','y','rotation','uri','style'],
-            'multipoint':['points','symbol','modifiers','uri','label','style'],
-            'circle':['cx','cy','r','uri','label','style','symbol','modifiers'],
-            'ellipse':['cx','cy','rx','ry','rotation','uri','label','style',
-            'modifiers','course','speed','symbol'],
-            'polyline':['points','uri','label','style','symbol','modifiers'],
-            'corridor':['points','width','minaltitude','maxaltitude','uri',
-            'label','style','symbol','modifiers'],
-            'polygon':['points','uri','label','style','symbol','modifiers'],
-            'arc':['cx','cy','course','speed','rotation','startangle','endangle',
-            'uri','label','style','symbol','modifiers'],
-            'arcband':['cx','cy','minr','maxr','startangle','endangle','uri',
-            'label','style','symbol','modifiers']}
-
-# need to map nvg geometry to ESRI geometry types.
+#geometry mapping
+geomMap = {"point":"POINT", "text":"POINT", "multipoint":"MULTIPOINT",
+            "circle":"POLYGON", "ellipse":"POLYGON", "polyline":"POLYLINE",
+            "corridor":"POLYLINE", "polygon":"POLYGON", "arc":"POLYLINE",
+            "arcband":"POLYGON"}
 
 def geo2arithetic(inAngle):
     """converts a bearing to aritmetic angle.
@@ -299,9 +287,10 @@ class Reader(object):
 
             return points
 
-    def readAll(self):
-        """Helper function to read all feature types in a NVG document.
+    def read(self):
+        """reads all elements in an NVG into the relevant esri feature types.
         """
+
         return True
 
 if __name__ =="__main__":
