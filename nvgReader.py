@@ -21,6 +21,7 @@ include support for future versions as required.
 """
 import xml.dom.minidom
 import arcpy
+import math
 
 # version 1.4 namespaces
 # this may not be needed if so it will be deleted
@@ -59,6 +60,28 @@ features = {'point':['x','y','symbol','modifiers','uri','label','style','course'
             'label','style','symbol','modifiers']}
 
 # need to map nvg geometry to ESRI geometry types.
+
+def geo2arithetic(inAngle):
+    """converts a bearing to aritmetic angle.
+    """
+    outAngle = -1.0
+    # Force input angle into 0 to 360 range
+    if inAngle > 360.0:
+        inAngle = math.fmod(inAngle,360.0)
+
+    # if anlge is 360 make it 0
+    if inAngle == 360.0:
+        inAngle = 0.0
+
+    #0 to 90
+    if (inAngle >= 0.0 and inAngle <= 90.0):
+        outAngle = math.fabs(inAngle - 90.0)
+
+    #90 to 360
+    if (inAngle > 90.0 and inAngle < 360.0):
+        outAngle = 360.0 - (inAngle - 90.0)
+
+    return outAngle
 
 class Reader(object):
     """NATO Vector Graphic Reader instance. Reads and processes a NATO Vector
@@ -110,7 +133,7 @@ class Reader(object):
 
     def _projectGeometry(geometry, spatial_refernce):
         """Projects the input geometry into the spatial_reference
-        
+
         THis is used to ensure the maths works on the geometry functions
         """
         projected = geometry.projectAs(spatial_refernce)
@@ -155,64 +178,6 @@ class Reader(object):
             geom = arcpy.Multipoint(array,self.wgs84)
 
         return geom
-
-## replacing all the commented code below with the single method _buildGeometry
-## special feature types such as arc, arcband, ellipse and circle will generate a string
-## of cooridnates and pass to the _buildGeometry method with the relevant geometry_type
-
-##    def _buildMulitPoint(self,points):
-##        """builds a multipoint geometry from a string of points.
-##        """
-##        cPoints = self._cleanPoints(points)
-##
-##        # array to hold point objects
-##        array = arcpy.Array
-##
-##        for point in cPoint:
-##            pnt = arcpy.Point()
-##            pnt.X = point[0]
-##            pnt.Y = point[1]
-##            array.add(pnt)
-##
-##        mGeom = arcpy.Multipoint(array,self.wgs84)
-##
-##        return mGeom
-##
-##    def _buildPolyline(self,points):
-##        """builds a polyline geometry from a string of points.
-##        """
-##        cPoints = self._cleanPoints(points)
-##
-##        # array to hold point objects
-##        array = arcpy.Array
-##
-##        for point in cPoint:
-##            pnt = arcpy.Point()
-##            pnt.X = point[0]
-##            pnt.Y = point[1]
-##            array.add(pnt)
-##
-##        lGeom = arcpy.Polyline(array,self.wgs84)
-##
-##        return lGeom
-##
-##    def _buildPolygon(self,points):
-##        """builds a polygon geometry from a string of points.
-##        """
-##        cPoints = self._cleanPoints(points)
-##
-##        # array to hold point objects
-##        array = arcpy.Array
-##
-##        for point in cPoint:
-##            pnt = arcpy.Point()
-##            pnt.X = point[0]
-##            pnt.Y = point[1]
-##            array.add(pnt)
-##
-##        polyGeom = arcpy.Polygon(array,self.wgs84)
-##
-##        return polyGeom
 
     def _pointString(self,points):
         """Returns a string in the format required by NVG for point coordinates.
