@@ -29,7 +29,7 @@ namespaces = {'nvg':'http://tide.act.nato.int/schemas/2008/10/nvg'}
 
 # need to handle file paths passed to the scrip that have \t etc in the path
 # by default this is not handled correctly
-nvg = r"C:\Users\dave\Documents\NVGData\nvg_1_4\SampleData.nvg"
+nvg = r"C:\Users\dave\Documents\NVGData\nvg_1_4\nvg_arc_1_4_single.nvg"
 
 # <a>, <g> and <composite> features not yet implemented
 
@@ -105,11 +105,12 @@ class Reader(object):
         listPoints = [p.split(",") for p in points.strip().split(" ")]
 
         # convert each coord to float
+
         fPoints = [[float(x) for x in row] for row in listPoints]
 
         return fPoints
 
-    def _projectGeometry(geometry, spatial_refernce):
+    def _projectGeometry(self,geometry, spatial_refernce):
         """Projects the input geometry into the spatial_reference
 
         THis is used to ensure the maths works on the geometry functions
@@ -174,10 +175,10 @@ class Reader(object):
         """
         s = ''
         for pnt in points:
-            pnt = str(pnt).strip('[]')
+            pnt = str(pnt).strip('[]').replace(" ","")
             s = s + pnt + " "
 
-        return points
+        return s
 
     def _buildElliptical(self,cx,cy,rx,ry,rotation,startangle=0,endangle=360):
         """Generates a set of point cordinates that describe an ellipse or an arc.
@@ -188,24 +189,25 @@ class Reader(object):
         # projects the cx,cy to world mercator
         pGeom = arcpy.PointGeometry(arcpy.Point(cx,cy),self.wgs84)
         centrePnt = self._projectGeometry(pGeom,self.world_merc)
-        X = centrePnt.firstPoint.X
-        Y = centrePnt.firstPoint.Y
-
-        rotation = math.radians(rotation)
-        step = 1
+        cX = centrePnt.firstPoint.X
+        cY = centrePnt.firstPoint.Y
+        rotation = math.radians(float(rotation))
+        step = 30
+        if int(startangle) > int(endangle):
+            endangle=int(endangle) + 360
 
         # generate points and rotate
-        for theata in range(startangle,endangle,step):
+        for theata in range(int(startangle),int(endangle),step):
             #caclulate points on the ellipse
-            theata = math.radians(theata)
-            X = rx * math.cos(theata)
-            Y = ry * math.sin(theata)
+            theata = math.radians(float(theata))
+            X = float(rx) * math.cos(theata)
+            Y = float(ry) * math.sin(theata)
 
-            # rotate point aund the centre
-            X = cx + X * math.cos(rotation) + Y * math.sin(rotation)
-            Y = cy - X * math.sin(rotation) + Y * math.cos(rotation)
+            # rotate point around the centre
+            rotX = cX + X * math.cos(rotation) + Y * math.sin(rotation)
+            rotY = cY - X * math.sin(rotation) + Y * math.cos(rotation)
 
-            points.apend([X,Y])
+            points.append([rotX,rotY])
 
         # build the geometry
         if startangle != 0 or endangle != 360:
@@ -244,8 +246,8 @@ class Reader(object):
         Y = centrePnt.firstPoint.Y
 
         # convert the start and end angles to arithmetic
-        startangle = math.radians(geo2arithetic(startangle))
-        endangle = math.radians(geo2arithetic(endangle))
+        startangle = math.radians(geo2arithetic(float(startangle)))
+        endangle = math.radians(geo2arithetic(float(endangle)))
 
         x_end = x + r2*math.cos(startangle)
         y_end = x + r2*math.sin(startangle)
