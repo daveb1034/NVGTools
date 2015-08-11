@@ -31,17 +31,7 @@ namespaces = {'nvg':'http://tide.act.nato.int/schemas/2008/10/nvg'}
 # by default this is not handled correctly
 nvg = r"E:\Google Drive\NVG\nvg_1_4\APP6A_SAMPLE.nvg"
 
-# the following section details all the attrbiutes assocaitated with each nvg
-# object. Each object has a set of mandatory and optional attributes. If stated
-# in the specification document the attribute is read by this tool. Any other
-# attributes are currently ignored. Tuples for each are stored with a flag of
-# o or m for optioanl and mandatory
-
-# dictionary of mandatory fields for each NVG feature
 # <a>, <g> and <composite> features not yet implemented
-# may need to move this into the class to enable access when the file is imported
-# into other code
-# this will utilise has parent etc from mindom
 
 #geometry mapping
 geomMap = {"point":"POINT", "text":"POINT", "multipoint":"MULTIPOINT",
@@ -351,9 +341,32 @@ class Reader(object):
         # parent node
         data.append(element.parentNode.nodeName)
         return data
+
     def read(self):
         """reads all elements in an NVG into the relevant esri feature types.
         """
+        # works through each element type and creates the geometry and extracts
+        # attributes. The final ouput of this is list of geometries with associated
+        # attributes.
+
+        # lists for the results
+        points = []
+        polylines = []
+        polygons = []
+        multipoints = []
+
+        # read text and point features
+        pElems = self._getElement('point')
+
+        # build geometries and get the aributes for each point
+        for pElem in pElems:
+            pGeom = self._buildPoint(pElem.attributes.get('x').value,
+                                    pElem.attributes.get('y').value)
+            pAttrs = self._readAttributes(pElem)
+            pAttrs.insert(0,pGeom)
+
+
+
 
         return True
 
