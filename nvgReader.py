@@ -192,7 +192,7 @@ class Reader(object):
         cX = centrePnt.firstPoint.X
         cY = centrePnt.firstPoint.Y
         rotation = math.radians(float(rotation))
-        step = 30
+        step = 1
         if int(startangle) > int(endangle):
             endangle=int(endangle) + 360
 
