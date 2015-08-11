@@ -286,7 +286,71 @@ class Reader(object):
             points.append([x_end,y_end])
 
             return points
-
+    def _readAttributes(element):
+        """reads attrbiutes from
+        """
+        # get all the attributes for the element
+        attributes = element.attributes
+        data = []
+        # collect all the attributes that could be present for all features
+        # any not present will be returned as None
+        # uri
+        if attributes.get('uri'):
+            data.append(attributes.get('uri').value)
+        else:
+            data.append(None)
+        # style
+        if attributes.get('style'):
+            data.append(attributes.get('style').value)
+        else:
+            data.append(None)
+        # label
+        # this wil need an addiitonal check to get the content tag for text elements
+        # as this will be loaded into the label field
+        if attributes.get('label'):
+            data.append(attributes.get('label').value)
+        else:
+            data.apend(None)
+        # symbol
+        if attributes.get('symbol'):
+            data.append(attributes.get('symbol').value)
+        else:
+            data.append(None)
+        # modifier(s) not correctly specified in version 1.4
+        if attributes.get('modifier'):
+            data.append(attributes.get('modifier').value)
+        elif attributes.get('modifiers'):
+            data.append(attributes.get('modifiers').value)
+        else:
+            data.append(None)
+        # course
+        if attributes.get('course'):
+            data.append(attributes.get('course').value)
+        else:
+            data.append(None)
+        # speed
+        if attributes.get('speed'):
+            data.append(attributes.get('speed').value)
+        else:
+            data.append(None)
+        # width
+        if attributes.get('width'):
+            data.append(attributes.get('width').value)
+        else:
+            data.append(None)
+        # minaltitude
+        if attributes.get('minaltitude'):
+            data.append(attributes.get('minaltitude').value)
+        else:
+            data.append(None)
+        # maxaltitude
+        if attributes.get('maxaltitude'):
+            data.append(attributes.get('maxaltitude').value)
+        else:
+            data.append(None)
+        # parent node
+        data.append(element.parentNode.nodeName)
+        return data
     def read(self):
         """reads all elements in an NVG into the relevant esri feature types.
         """
