@@ -149,14 +149,20 @@ class Reader(object):
 
         return pGeom
 
-    def _buildGeometry(self,points,geometry_type):
+    def _buildGeometry(self,points,geometry_type,saptial_reference):
         """Builds the relevant geometry from a string of points based on the
-        geometry_type.
+        geometry_type and spatial_reference.
 
         Valid Geometyr Types are:
             POLYGON
             POLYLINE
             MULTIPOINT
+
+        Valid Spatial References are
+        self.wgs84 - used for all default shapes
+        self.world_merc - used for ellipses, arcs, and arcbands
+
+        the returned geometry will always be projected as wgs84
         """
         # clean the point string
         cPoints = self._cleanPoints(points)
@@ -171,12 +177,15 @@ class Reader(object):
             array.add(pnt)
 
         if geometry_type == 'POLYGON':
-            geom = arcpy.Polygon(array,self.wgs84)
+            geom = arcpy.Polygon(array,spatial_reference)
         elif geometry_type == 'POLYLINE':
-            geom = arcpy.Polyline(array,self.wgs84)
+            geom = arcpy.Polyline(array,spatial_reference)
         elif geometry_type == 'MULITPOINT':
-            geom = arcpy.Multipoint(array,self.wgs84)
+            geom = arcpy.Multipoint(array,spatial_reference)
 
+        # ensure final geom is returned in wgs84
+        if geom.spatialReference.factoryCode != 4326:
+            geom = self._projectGeometry(geom,self.wgs84)
         return geom
 
     def _pointString(self,points):
@@ -239,15 +248,56 @@ class Reader(object):
 
         return polygon
 
-    # the build arcband will have default values that will be used
-    # to generate either a circle or an arc. By default the r2,
-    # start and end angles will be set to 0 only the cx, cy and r1
-    # are required.
     def _buildArcband(self,cx,cy,r1,r2,startangle,endangle):
-        """Builds a circle
+        """Builds a wedge describing an area between two concentric circles.
         """
-        points = ''
-        return points
+        # project the point to metres
+        pGeom = arcpy.PointGeometry(arcpy.Point(cx,cy),self.wgs84)
+        centrePnt = self._projectGeometry(pGeom,self.world_merc)
+        X = centrePnt.firstPoint.X
+        Y = centrePnt.firstPoint.Y
+
+        # convert the start and end angles to arithmetic
+        startangle = math.radians(geo2arithetic(startangle))
+        endangle = math.radians(geo2arithetic(endangle))
+
+        x_end = x + r2*math.cos(startangle)
+        y_end = x + r2*math.sin(startangle)
+
+        # create a point every 0.1 of a degree
+        i = math.radians(0.1)
+
+        points = []
+        # if r1 == 0 then we create a cone
+        if r1 == 0.0:
+            points.append([X,Y])
+
+            a = startangle
+            while startangle >= endangle:
+                x = X + r2*math.cos(a)
+                y = Y + r2*math.sin(a)
+                points.append([x,y])
+                a -= i
+        else:
+            # calculate outer edge
+            while a >= endangle:
+                x = X + r2*math.cos(a)
+                y = Y + r2*math.sin(a)
+                a -= i
+                points.append([x,y])
+
+            # calculate the inner edge
+            a = endangle
+            while a <= startangle:
+                a += i
+                x = X + r1*math.cos(a)
+                y = Y + r1*math.sin(a)
+                points.append([x,y])
+
+            # close the polygon
+            points.append([x_end,y_end])
+
+            return points
 
     def readAll(self):
         """Helper function to read all feature types in a NVG document.
