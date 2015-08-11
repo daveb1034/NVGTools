@@ -29,7 +29,7 @@ namespaces = {'nvg':'http://tide.act.nato.int/schemas/2008/10/nvg'}
 
 # need to handle file paths passed to the scrip that have \t etc in the path
 # by default this is not handled correctly
-nvg = r"E:\Google Drive\NVG\nvg_1_4\APP6A_SAMPLE.nvg"
+nvg = r"C:\Users\dave\Documents\NVGData\nvg_1_4\SampleData.nvg"
 
 # <a>, <g> and <composite> features not yet implemented
 
@@ -102,7 +102,7 @@ class Reader(object):
         """
         # get a list of coord pairs as strings from points
         # [['x1','y1'],['x2','y2'],[...]]
-        listPoints = [p.split(",") for p in points.rstrip().split(" ")]
+        listPoints = [p.split(",") for p in points.strip().split(" ")]
 
         # convert each coord to float
         fPoints = [[float(x) for x in row] for row in listPoints]
@@ -127,7 +127,7 @@ class Reader(object):
 
         return pGeom
 
-    def _buildGeometry(self,points,geometry_type,saptial_reference):
+    def _buildGeometry(self,points,geometry_type,spatial_reference):
         """Builds the relevant geometry from a string of points based on the
         geometry_type and spatial_reference.
 
@@ -146,9 +146,9 @@ class Reader(object):
         cPoints = self._cleanPoints(points)
 
         # array to hold point objects
-        array = arcpy.Array
+        array = arcpy.Array()
 
-        for point in cPoint:
+        for point in cPoints:
             pnt = arcpy.Point()
             pnt.X = point[0]
             pnt.Y = point[1]
@@ -432,6 +432,8 @@ class Reader(object):
 
 if __name__ =="__main__":
     reader = Reader(nvg,namespaces)
+    test = reader.read()
+    print(test[1])
 
 
 
