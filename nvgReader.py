@@ -276,7 +276,7 @@ class Reader(object):
             points.append([x_end,y_end])
 
             return points
-    def _readAttributes(element):
+    def _readAttributes(self,element):
         """reads attrbiutes from
         """
         # get all the attributes for the element
@@ -299,6 +299,16 @@ class Reader(object):
         # as this will be loaded into the label field
         if attributes.get('label'):
             data.append(attributes.get('label').value)
+        # reads the contents of any content tags and appends to the text variable
+        # this may not be the best way to extract data from content and further work
+        # is needed.
+        elif element.getElementsByTagName('content'):
+            content = element.getElementsByTagName('content')
+            text = ''
+            for node in content:
+                text += node.firstChild.data
+                text += ' '
+            data.append(text)
         else:
             data.apend(None)
         # symbol
@@ -355,7 +365,7 @@ class Reader(object):
         polygons = []
         multipoints = []
 
-        # read text and point features
+        # read point features
         pElems = self._getElement('point')
 
         # build geometries and get the aributes for each point
@@ -364,11 +374,22 @@ class Reader(object):
                                     pElem.attributes.get('y').value)
             pAttrs = self._readAttributes(pElem)
             pAttrs.insert(0,pGeom)
+            points.append(pAttrs)
+
+        # text
+        tElems = self._getElement('text')
+
+        # build geometries and get the aributes for each point
+        for tElem in tElems:
+            tGeom = self._buildPoint(tElem.attributes.get('x').value,
+                                    tElem.attributes.get('y').value)
+            tAttrs = self._readAttributes(tElem)
+            tAttrs.insert(0,tGeom)
+            points.append(tAttrs)
 
 
 
-
-        return True
+        return points
 
 if __name__ =="__main__":
     reader = Reader(nvg,namespaces)
