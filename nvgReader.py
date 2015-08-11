@@ -185,6 +185,11 @@ class Reader(object):
         Coordinates need to be projected before using the tools.
         """
         points = []
+        # projects the cx,cy to world mercator
+        pGeom = arcpy.PointGeometry(arcpy.Point(cx,cy),self.wgs84)
+        centrePnt = self._projectGeometry(pGeom,self.world_merc)
+        X = centrePnt.firstPoint.X
+        Y = centrePnt.firstPoint.Y
 
         rotation = math.radians(rotation)
         step = 1
@@ -202,10 +207,13 @@ class Reader(object):
 
             points.apend([X,Y])
 
-        return points
-    # circle builder will be able to build circles and arcbands just need to sort
-    # the code out. this will amalgamate into a single method
+        # build the geometry
+        if startangle != 0 or endangle != 360:
+            geom = self._buildGeometry(self._pointString(points),"POLYLINE",self.world_merc)
+        else:
+            geom = self._buildGeometry(self._pointString(points),"POLYGON",self.world_merc)
 
+        return geom
 
     def _buildCircle(self,cx,cy,r):
         """Returns arcpy.Polygon circle from the cx, cy and radius.
@@ -275,7 +283,11 @@ class Reader(object):
             # close the polygon
             points.append([x_end,y_end])
 
-            return points
+        # build the geom
+        geom = self._buildGeometry(self._pointString,"POLYGON",self.world_merc)
+
+        return geom
+
     def _readAttributes(self,element):
         """reads attrbiutes from
         """
@@ -368,7 +380,7 @@ class Reader(object):
         # read point features
         pElems = self._getElement('point')
 
-        # build geometries and get the aributes for each point
+        # build geometries and get the aributes for each point element
         for pElem in pElems:
             pGeom = self._buildPoint(pElem.attributes.get('x').value,
                                     pElem.attributes.get('y').value)
@@ -379,7 +391,7 @@ class Reader(object):
         # text
         tElems = self._getElement('text')
 
-        # build geometries and get the aributes for each point
+        # build geometries and get the aributes for each text element
         for tElem in tElems:
             tGeom = self._buildPoint(tElem.attributes.get('x').value,
                                     tElem.attributes.get('y').value)
@@ -387,9 +399,36 @@ class Reader(object):
             tAttrs.insert(0,tGeom)
             points.append(tAttrs)
 
+        # polyline
+        lines = ['polyline','corridor','arc']
+        for line in lines:
+            if line == 'arc':
+                lnElems = self._getElement(line)
+                for lnElem in lnElems:
+                    lnGeom = self._buildElliptical(lnElem.attributes.get('cx').value,
+                                            lnElem.attributes.get('cy').value,
+                                            lnElem.attributes.get('rx').value,
+                                            lnElem.attributes.get('ry').value,
+                                            lnElem.attributes.get('rotation').value,
+                                            lnElem.attributes.get('startangle').value,
+                                            lnElem.attributes.get('endangle').value)
+                    lnAttrs = self._readAttributes(lnElem)
+                    lnAttrs.insert(0,lnGeom)
+                    polylines.append(lnAttrs)
 
+            else:
+                # builds gemetries and reads attributes for polyines and corridor
+                lnElems = self._getElement(line)
 
-        return points
+                # build geometries and get the aributes for each text element
+                for lnElem in lnElems:
+                    lnGeom = self._buildGeometry(lnElem.attributes.get('points').value,
+                                                'POLYLINE',self.wgs84)
+                    lnAttrs = self._readAttributes(lnElem)
+                    lnAttrs.insert(0,lnGeom)
+                    polylines.append(lnAttrs)
+
+        return points, polylines
 
 if __name__ =="__main__":
     reader = Reader(nvg,namespaces)
