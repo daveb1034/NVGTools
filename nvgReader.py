@@ -471,18 +471,18 @@ class Reader(object):
                     ellipseAttrs.insert(0,ellipseGeom)
                     polygons.append(ellipseAttrs)
 
-            elif polygon == 'arcband':
-                arcElems = self._getElement('arcband')
-                for arcElem in arcElems:
-                    arcGeom = self._buildArcband(arcElem.attributes.get('cx').value,
-                                                        arcElem.attributes.get('cy').value,
-                                                        arcElem.attributes.get('minr').value,
-                                                        arcElem.attributes.get('maxr').value,
-                                                        arcElem.attributes.get('startangle').value,
-                                                        arcElem.attributes.get('endangle').value)
-                    arcAttrs = self._readAttributes(arcElem)
-                    arcAttrs.insert(0,arcGeom)
-                    polygons.append(arcAttrs)
+##            elif polygon == 'arcband':
+##                arcElems = self._getElement('arcband')
+##                for arcElem in arcElems:
+##                    arcGeom = self._buildArcband(arcElem.attributes.get('cx').value,
+##                                                        arcElem.attributes.get('cy').value,
+##                                                        arcElem.attributes.get('minr').value,
+##                                                        arcElem.attributes.get('maxr').value,
+##                                                        arcElem.attributes.get('startangle').value,
+##                                                        arcElem.attributes.get('endangle').value)
+##                    arcAttrs = self._readAttributes(arcElem)
+##                    arcAttrs.insert(0,arcGeom)
+##                    polygons.append(arcAttrs)
 
         return points, polylines, polygons, multipoints
 
