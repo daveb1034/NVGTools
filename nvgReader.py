@@ -159,7 +159,7 @@ class Reader(object):
             geom = arcpy.Polygon(array,spatial_reference)
         elif geometry_type == 'POLYLINE':
             geom = arcpy.Polyline(array,spatial_reference)
-        elif geometry_type == 'MULITPOINT':
+        elif geometry_type == 'MULTIPOINT':
             geom = arcpy.Multipoint(array,spatial_reference)
 
         # ensure final geom is returned in wgs84
@@ -236,56 +236,77 @@ class Reader(object):
 
         return polygon
 
-    def _buildArcband(self,cx,cy,minr,maxr,startangle,endangle):
+    def _buildArcband(self,cx,cy,minr,maxr,start,end):
         """Builds a wedge describing an area between two concentric circles.
         """
         # project the point to metres
         pGeom = arcpy.PointGeometry(arcpy.Point(cx,cy),self.wgs84)
         centrePnt = self._projectGeometry(pGeom,self.world_merc)
-        X = centrePnt.firstPoint.X
-        Y = centrePnt.firstPoint.Y
+        cx = centrePnt.firstPoint.X
+        cy = centrePnt.firstPoint.Y
 
+        # convert values to float
         r1 = float(minr)
         r2 = float(maxr)
+        start = float(start)
+        end = float(end)
 
-        # convert the start and end angles to arithmetic
-        startangle = math.radians(geo2arithetic(float(startangle)))
-        endangle = math.radians(geo2arithetic(float(endangle)))
+        # convert the bearings from north to maths for use in the coordinate calculations
+        #start = math.radians(90 - start)
+        if start > end:
+            end = end + 360
+            end = math.radians(90 - end)
+        else:
+            end = math.radians(90 - end)
+        start = math.radians(90 - start)
+        #Calculate the end x,y for the wedge
+        x_end = cx + r2*math.cos(start)
+        y_end = cy + r2*math.sin(start)
 
-        x_end = X + r2*math.cos(startangle)
-        y_end = Y + r2*math.sin(startangle)
-
-        # create a point every 0.1 of a degree
+        #Set the step value for the x,y coordiantes
         i = math.radians(0.1)
-        a = startangle
+
         points = []
-        # if r1 == 0 then we create a cone
-        if r1 == 0.0:
+        #Calculate the outer edge of the wedge
+        a = start
+
+        #If r1 == 0 then create a wedge from the centre point
+        if r1 == 0:
+            #Add the start point to the array
+            points.append([cx,cy])
+            #Calculate the rest of the wedge
+            while a >= end:
+                X = cx + r2*math.cos(a)
+                Y = cy + r2*math.sin(a)
+
+                points.append([X,Y])
+                a -= i
+            #Close the polygon
+            X = cx
+            Y = cy
+
             points.append([X,Y])
 
-
-            while startangle >= endangle:
-                x = X + r2*math.cos(a)
-                y = Y + r2*math.sin(a)
-                points.append([x,y])
-                a -= i
         else:
-            # calculate outer edge
-            while a >= endangle:
-                x = X + r2*math.cos(a)
-                y = Y + r2*math.sin(a)
+            while a >= end:
+                X = cx + r2*math.cos(a)
+                Y = cy + r2*math.sin(a)
                 a -= i
-                points.append([x,y])
+                points.append([X,Y])
 
-            # calculate the inner edge
-            a = endangle
-            while a <= startangle:
-                a += i
-                x = X + r1*math.cos(a)
-                y = Y + r1*math.sin(a)
-                points.append([x,y])
 
-            # close the polygon
+            #Caluclate the inner edge of the wedge
+            a = end
+            while a <= start:
+                a += i ## should this be bofore the calc or after?
+                X = cx + r1*math.cos(a)
+                Y = cy + r1*math.sin(a)
+
+                points.append([X,Y])
+
+
+
+            #Close the polygon by adding the end point
             points.append([x_end,y_end])
 
         # build the geom
@@ -471,19 +492,20 @@ class Reader(object):
                     ellipseAttrs.insert(0,ellipseGeom)
                     polygons.append(ellipseAttrs)
 
-##            elif polygon == 'arcband':
-##                arcElems = self._getElement('arcband')
-##                for arcElem in arcElems:
-##                    arcGeom = self._buildArcband(arcElem.attributes.get('cx').value,
-##                                                        arcElem.attributes.get('cy').value,
-##                                                        arcElem.attributes.get('minr').value,
-##                                                        arcElem.attributes.get('maxr').value,
-##                                                        arcElem.attributes.get('startangle').value,
-##                                                        arcElem.attributes.get('endangle').value)
-##                    arcAttrs = self._readAttributes(arcElem)
-##                    arcAttrs.insert(0,arcGeom)
-##                    polygons.append(arcAttrs)
+            elif polygon == 'arcband':
+                arcElems = self._getElement('arcband')
+                for arcElem in arcElems:
+                    arcGeom = self._buildArcband(arcElem.attributes.get('cx').value,
+                                                        arcElem.attributes.get('cy').value,
+                                                        arcElem.attributes.get('minr').value,
+                                                        arcElem.attributes.get('maxr').value,
+                                                        arcElem.attributes.get('startangle').value,
+                                                        arcElem.attributes.get('endangle').value)
+                    arcAttrs = self._readAttributes(arcElem)
+                    arcAttrs.insert(0,arcGeom)
+                    polygons.append(arcAttrs)
         # build geometries and get the aributes for each multipoint element
+        mpElems = self._getElement('multipoint')
         for mpElem in mpElems:
             mpGeom = self._buildGeometry(mpElem.attributes.get('points').value,
                                                     'MULTIPOINT',self.wgs84)
