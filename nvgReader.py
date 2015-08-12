@@ -236,7 +236,7 @@ class Reader(object):
 
         return polygon
 
-    def _buildArcband(self,cx,cy,r1,r2,startangle,endangle):
+    def _buildArcband(self,cx,cy,minr,maxr,startangle,endangle):
         """Builds a wedge describing an area between two concentric circles.
         """
         # project the point to metres
@@ -245,22 +245,25 @@ class Reader(object):
         X = centrePnt.firstPoint.X
         Y = centrePnt.firstPoint.Y
 
+        r1 = float(minr)
+        r2 = float(maxr)
+
         # convert the start and end angles to arithmetic
         startangle = math.radians(geo2arithetic(float(startangle)))
         endangle = math.radians(geo2arithetic(float(endangle)))
 
-        x_end = x + r2*math.cos(startangle)
-        y_end = x + r2*math.sin(startangle)
+        x_end = X + r2*math.cos(startangle)
+        y_end = Y + r2*math.sin(startangle)
 
         # create a point every 0.1 of a degree
         i = math.radians(0.1)
-
+        a = startangle
         points = []
         # if r1 == 0 then we create a cone
         if r1 == 0.0:
             points.append([X,Y])
 
-            a = startangle
+
             while startangle >= endangle:
                 x = X + r2*math.cos(a)
                 y = Y + r2*math.sin(a)
@@ -286,7 +289,7 @@ class Reader(object):
             points.append([x_end,y_end])
 
         # build the geom
-        geom = self._buildGeometry(self._pointString,"POLYGON",self.world_merc)
+        geom = self._buildGeometry(self._pointString(points),"POLYGON",self.world_merc)
 
         return geom
 
@@ -467,6 +470,19 @@ class Reader(object):
                     ellipseAttrs = self._readAttributes(ellipseElem)
                     ellipseAttrs.insert(0,ellipseGeom)
                     polygons.append(ellipseAttrs)
+
+            elif polygon == 'arcband':
+                arcElems = self._getElement('arcband')
+                for arcElem in arcElems:
+                    arcGeom = self._buildArcband(arcElem.attributes.get('cx').value,
+                                                        arcElem.attributes.get('cy').value,
+                                                        arcElem.attributes.get('minr').value,
+                                                        arcElem.attributes.get('maxr').value,
+                                                        arcElem.attributes.get('startangle').value,
+                                                        arcElem.attributes.get('endangle').value)
+                    arcAttrs = self._readAttributes(arcElem)
+                    arcAttrs.insert(0,arcGeom)
+                    polygons.append(arcAttrs)
 
         return points, polylines, polygons, multipoints
 
