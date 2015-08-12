@@ -230,7 +230,7 @@ class Reader(object):
         pGeom_WM = self._projectGeometry(pGeom_wgs84,self.world_merc)
 
         # buffer the point by the radius
-        polygon_wm = pGeom_WM.buffer(r)
+        polygon_wm = pGeom_WM.buffer(float(r))
         # return the polygon in wgs84 geographics
         polygon = self._projectGeometry(polygon_wm,self.wgs84)
 
@@ -446,6 +446,15 @@ class Reader(object):
                     polyAttrs = self._readAttributes(polyElem)
                     polyAttrs.insert(0,polyGeom)
                     polygons.append(polyAttrs)
+            elif polygon == 'circle':
+                circleElems = self._getElement('circle')
+                for circleElem in circleElems:
+                    circleGeom = self._buildCircle(circleElem.attributes.get('cx').value,
+                                                    circleElem.attributes.get('cy').value,
+                                                    circleElem.attributes.get('r').value,)
+                    circleAttrs = self._readAttributes(circleElem)
+                    circleAttrs.insert(0,circleGeom)
+                    polygons.append(circleAttrs)
 
         return points, polylines, polygons, multipoints
 
