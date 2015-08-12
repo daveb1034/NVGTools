@@ -6,15 +6,22 @@ NVGTools
 
 The NATO Vector Graphics format was developed as a means for NATO systems to share and use overlays. The format is based on SVG.
 
+### Whats New? ###
+
+The code for the reader is at point where a full scale these is required. With the exception of <a>, <g> and <composite> features which are supported by appending the parnet node of each feature in the attibutes.
+There is no direct equivalent feature type in ArcGIS. These features are used to group elements together.
+
 ## nvgReader.py ##
 
 Provides a means to read a nvg file and output feature classes to a file geodatabase.
 
-This code is in active development and a release will be provided soon. This will focus on reading nvg version 1.4.0 into file geodatabases.
+The reader currently returns 4 lists which contain the geometries and atributes for supported features from an NVG 1.4.0 document.
+each item in the list can be inserted into a feature class with the relevant fields directly using an insert cursor.
 
-I have a few change of directions on the best way to read the NVG format. It has some pretty awkward concepts but I am pretty much there on the basic implementation points.
+Examples of usage will be provided with a sample python toolbox.
 
-Future versions will be supported as the tools develop. In addition a means to write nvg from file geodatabase will be developed. It is likely that reading from a file geodatabase will be achieved through the use of feature templates.
+The reader does not support namespaces other than the default NVG. This will be added later as will support for versions 1.5.0 and 2.0.0 of the NVG specification.
+
 
 ## Contributing ##
 
