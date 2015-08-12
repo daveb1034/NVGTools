@@ -456,6 +456,18 @@ class Reader(object):
                     circleAttrs.insert(0,circleGeom)
                     polygons.append(circleAttrs)
 
+            elif polygon == 'ellipse':
+                ellipseElems = self._getElement('ellipse')
+                for ellipseElem in ellipseElems:
+                    ellipseGeom = self._buildElliptical(ellipseElem.attributes.get('cx').value,
+                                                        ellipseElem.attributes.get('cy').value,
+                                                        ellipseElem.attributes.get('rx').value,
+                                                        ellipseElem.attributes.get('ry').value,
+                                                        ellipseElem.attributes.get('rotation').value)
+                    ellipseAttrs = self._readAttributes(ellipseElem)
+                    ellipseAttrs.insert(0,ellipseGeom)
+                    polygons.append(ellipseAttrs)
+
         return points, polylines, polygons, multipoints
 
 if __name__ =="__main__":
