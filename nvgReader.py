@@ -368,6 +368,12 @@ class Reader(object):
 
     def read(self):
         """reads all elements in an NVG into the relevant esri feature types.
+
+        Returns a tuple of 4 lists: points, polylines, polygons, multipoints.
+        These contain the geometry and atributes for the extracted NVG features.
+        Each list contains a list for each feature in the form:
+            [geom,attr1,attr2,...]
+        This is can be directly inserted into a feature class with the correct schema.
         """
         # works through each element type and creates the geometry and extracts
         # attributes. The final ouput of this is list of geometries with associated
@@ -430,7 +436,18 @@ class Reader(object):
                     lnAttrs.insert(0,lnGeom)
                     polylines.append(lnAttrs)
 
-        return points, polylines
+        # get polygons, circles, ellipses and arcbands
+        for polygon in ['polygon','circle','ellipse','arcband']:
+            if polygon == 'polygon':
+                polyElems = self._getElement('polygon')
+                for polyElem in polyElems:
+                    polyGeom = self._buildGeometry(polyElem.attributes.get('points').value,
+                                                    'POLYGON',self.wgs84)
+                    polyAttrs = self._readAttributes(polyElem)
+                    polyAttrs.insert(0,polyGeom)
+                    polygons.append(polyAttrs)
+
+        return points, polylines, polygons, multipoints
 
 if __name__ =="__main__":
     reader = Reader(nvg,namespaces)
