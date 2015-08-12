@@ -483,6 +483,13 @@ class Reader(object):
 ##                    arcAttrs = self._readAttributes(arcElem)
 ##                    arcAttrs.insert(0,arcGeom)
 ##                    polygons.append(arcAttrs)
+        # build geometries and get the aributes for each multipoint element
+        for mpElem in mpElems:
+            mpGeom = self._buildGeometry(mpElem.attributes.get('points').value,
+                                                    'MULTIPOINT',self.wgs84)
+            mpAttrs = self._readAttributes(mpElem)
+            mpAttrs.insert(0,mpGeom)
+            multipoints.append(mpAttrs)
 
         return points, polylines, polygons, multipoints
 
