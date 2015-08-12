@@ -27,17 +27,7 @@ import math
 # this may not be needed if so it will be deleted
 namespaces = {'nvg':'http://tide.act.nato.int/schemas/2008/10/nvg'}
 
-# need to handle file paths passed to the scrip that have \t etc in the path
-# by default this is not handled correctly
-nvg = r"C:\Users\dave\Documents\NVGData\nvg_1_4\nvg_arc_1_4_single.nvg"
-
 # <a>, <g> and <composite> features not yet implemented
-
-#geometry mapping
-geomMap = {"point":"POINT", "text":"POINT", "multipoint":"MULTIPOINT",
-            "circle":"POLYGON", "ellipse":"POLYGON", "polyline":"POLYLINE",
-            "corridor":"POLYLINE", "polygon":"POLYGON", "arc":"POLYLINE",
-            "arcband":"POLYGON"}
 
 def geo2arithetic(inAngle):
     """converts a bearing to aritmetic angle.
@@ -516,9 +506,12 @@ class Reader(object):
         return points, polylines, polygons, multipoints
 
 if __name__ =="__main__":
+    # need to handle file paths passed to the scrip that have \t etc in the path
+    # by default this is not handled correctly
+    nvg = r"C:\Users\dave\Documents\NVGData\nvg_1_4\APP6A_SAMPLE.nvg"
     reader = Reader(nvg,namespaces)
     test = reader.read()
-    print(test[1])
+    print test[3]
 
 
 
