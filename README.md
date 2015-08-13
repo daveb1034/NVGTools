@@ -24,12 +24,14 @@ The reader does not support namespaces other than the default NVG. This will be 
 
 ## Usage
 
-Reading NVG files is done using an instance of the Reader class.
+Reading NVG files is done using an instance of the Reader class. The optional namespace tag in the Reader class is not yet implemented and should be left to the default value None.
 
 ```python
 import nvgReader as NVG
 
-reader = NVG.Reader(nvgFile)
+nvgFile = r'e:\mydata\nvg\sample.nvg'
+
+reader = NVG.Reader(nvgFile,namespaces=None)
 points, polylines, polygons, multipoints = reader.read()
 ```
 The read method returns a tuple of 4 lists:
