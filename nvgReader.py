@@ -55,7 +55,7 @@ class Reader(object):
     """NATO Vector Graphic Reader instance. Reads and processes a NATO Vector
     Graphic to ESRI Geometry.
     """
-    def __init__(self,nvgFile,namespaces):
+    def __init__(self,nvgFile,namespaces=None):
         """Initiate the object and set the basic attributes
         """
         self.nvgFile = nvgFile
@@ -338,7 +338,7 @@ class Reader(object):
                 text += ' '
             data.append(text)
         else:
-            data.apend(None)
+            data.append(None)
         # symbol
         if attributes.get('symbol'):
             data.append(attributes.get('symbol').value)
