@@ -27,12 +27,25 @@ The reader does not support namespaces other than the default NVG. This will be 
 Reading NVG files is done using an instance of the Reader class.
 
 ```python
-from nvgReader import Reader as Reader
+import nvgReader as NVG
 
-reader = Reader(nvgFile)
+reader = NVG.Reader(nvgFile)
 points, polylines, polygons, multipoints = reader.read()
 ```
+The read method returns a tuple of 4 lists:
+```python
+[points, polylines, polygons, multipoints]
+```
 
+Each feature is returned as a list with the geomerty objct at position 0 and the common attributes. If an attribute is not provided in the NVG file then None is returned.
+
+The list returns the following attributes
+```python
+>>> [<geometry>, 'uri', 'style', 'label', 'symbol', 'modifiers', 'course', 'speed', 'width', 'min_altitude', 'max_altitude', 'parenNode']
+```
+
+
+Each item will have one or more NVG features in a form ready to load into a feature class.
 ## Contributing ##
 
 Please feel free to contribute to the code. I am happy to include ideas people may have for additional functionality. The best way to do this is to either use the fork and pull workflow or raise an issue and I will attempt to add the required functionality.
