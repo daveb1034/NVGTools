@@ -26,12 +26,12 @@ The reader does not support namespaces other than the default NVG. This will be 
 
 Reading NVG files is done using an instance of the Reader class.
 
-'''python
+```python
 from nvgReader import Reader as Reader
 
 reader = Reader(nvgFile)
 points, polylines, polygons, multipoints = reader.read()
-'''
+```
 
 ## Contributing ##
 
