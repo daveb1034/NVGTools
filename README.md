@@ -34,7 +34,7 @@ points, polylines, polygons, multipoints = reader.read()
 ```
 The read method returns a tuple of 4 lists:
 ```python
-[points, polylines, polygons, multipoints]
+>>> [points, polylines, polygons, multipoints]
 ```
 
 Each feature is returned as a list with the geomerty objct at position 0 and the common attributes. If an attribute is not provided in the NVG file then None is returned.
