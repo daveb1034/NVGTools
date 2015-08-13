@@ -8,7 +8,7 @@ The NATO Vector Graphics format was developed as a means for NATO systems to sha
 
 ### Whats New? ###
 
-The code for the reader is at point where a full scale these is required. With the exception of <a>, <g> and <composite> features which are supported by appending the parnet node of each feature in the attibutes.
+The code for the reader is at point where a full scale these is required. With the exception of a, g and composite features which are supported by appending the parnet node of each feature in the attibutes.
 There is no direct equivalent feature type in ArcGIS. These features are used to group elements together.
 
 ## nvgReader.py ##
@@ -22,6 +22,16 @@ Examples of usage will be provided with a sample python toolbox.
 
 The reader does not support namespaces other than the default NVG. This will be added later as will support for versions 1.5.0 and 2.0.0 of the NVG specification.
 
+## Usage
+
+Reading NVG files is done using an instance of the Reader class.
+
+'''python
+from nvgReader import Reader as Reader
+
+reader = Reader(nvgFile)
+points, polylines, polygons, multipoints = reader.read()
+'''
 
 ## Contributing ##
 
