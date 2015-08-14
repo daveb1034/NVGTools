@@ -23,9 +23,10 @@ import xml.dom.minidom
 import arcpy
 import math
 
-# version 1.4 namespaces
-# this may not be needed if so it will be deleted
-namespaces = {'nvg':'http://tide.act.nato.int/schemas/2008/10/nvg'}
+# namespace based on the version of the NVG document.
+namespaces = {'1.4.0': 'http://tide.act.nato.int/schemas/2008/10/nvg',
+              '1.5.0': 'http://tide.act.nato.int/schemas/2009/10/nvg',
+              '2.0.0': 'https://tide.act.nato.int/schemas/2012/10/nvg'}
 
 # <a>, <g> and <composite> features not yet implemented
 
