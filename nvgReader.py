@@ -69,6 +69,14 @@ class Reader(object):
         # consider moving this to a seperate method
         self.version = self.dom.documentElement.getAttribute("version")
 
+        # update the namespace based on the version of the document
+        if self.version == '1.4.0':
+            self.namespace = namespaces['1.4.0']
+        elif self.version == '1.5.0':
+            self.namespace = namespaces['1.5.0']
+        elif self.version == '2.0.0':
+            self.namespace = namespaces['2.0.0']
+
         # need to define the outputs based on the datatypes in the nvg
         self.esriPolygon = []
         self.esriPolyline = []
@@ -83,9 +91,10 @@ class Reader(object):
 
 
     def _getElement(self,tag):
-        """Return all elements with given tag.
+        """Return all elements with given tag with the correct namespace for the
+        version of NVG.
         """
-        return self.dom.getElementsByTagName(tag)
+        return self.dom.getElementsByTagNameNS(self.namespace,tag)
 
     def _cleanPoints(self,points):
         """Cleans a string of point coordinate pairs and returns a list of
