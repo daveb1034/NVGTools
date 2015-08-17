@@ -184,8 +184,11 @@ class Reader(object):
         cY = centrePnt.firstPoint.Y
         rotation = math.radians(float(rotation))
         step = 1
-        if int(startangle) > int(endangle):
-            endangle=int(endangle) + 360
+        startangle = float(startangle)
+        endangle = float(endangle)
+
+        if startangle > endangle:
+            endangle=endangle + 360
 
         # generate points and rotate
         for theata in range(int(startangle),int(endangle),step):
