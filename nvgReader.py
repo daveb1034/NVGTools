@@ -23,11 +23,6 @@ import xml.dom.minidom
 import arcpy
 import math
 
-# namespace based on the version of the NVG document.
-namespaces = {'1.4.0': 'http://tide.act.nato.int/schemas/2008/10/nvg',
-              '1.5.0': 'http://tide.act.nato.int/schemas/2009/10/nvg',
-              '2.0.0': 'https://tide.act.nato.int/schemas/2012/10/nvg'}
-
 # <a>, <g> and <composite> features not yet implemented
 
 def geo2arithetic(inAngle):
@@ -56,11 +51,14 @@ class Reader(object):
     """NATO Vector Graphic Reader instance. Reads and processes a NATO Vector
     Graphic to ESRI Geometry.
     """
-    def __init__(self,nvgFile,namespaces=None):
+    def __init__(self,nvgFile):
         """Initiate the object and set the basic attributes
         """
         self.nvgFile = nvgFile
-        self.namespaces = namespaces
+        # namespace based on the version of the NVG document.
+        self.namespaces = {'1.4.0': 'http://tide.act.nato.int/schemas/2008/10/nvg',
+                            '1.5.0': 'http://tide.act.nato.int/schemas/2009/10/nvg',
+                            '2.0.0': 'https://tide.act.nato.int/schemas/2012/10/nvg'}
 
         # parse the nvgFile
         self.dom = xml.dom.minidom.parse(self.nvgFile)
@@ -71,11 +69,11 @@ class Reader(object):
 
         # update the namespace based on the version of the document
         if self.version == '1.4.0':
-            self.namespace = namespaces['1.4.0']
+            self.namespace = self.namespaces['1.4.0']
         elif self.version == '1.5.0':
-            self.namespace = namespaces['1.5.0']
+            self.namespace = self.namespaces['1.5.0']
         elif self.version == '2.0.0':
-            self.namespace = namespaces['2.0.0']
+            self.namespace = self.namespaces['2.0.0']
 
         # need to define the outputs based on the datatypes in the nvg
         self.esriPolygon = []

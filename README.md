@@ -16,11 +16,13 @@ There is no direct equivalent feature type in ArcGIS. These features are used to
 Provides a means to read a nvg file and output feature classes to a file geodatabase.
 
 The reader currently returns 4 lists which contain the geometries and atributes for supported features from an NVG 1.4.0 document.
-each item in the list can be inserted into a feature class with the relevant fields directly using an insert cursor.
+Each item in the list can be inserted into a feature class with the relevant fields directly using an insert cursor.
 
 Examples of usage will be provided with a sample python toolbox.
 
-The reader does not support namespaces other than the default NVG. This will be added later as will support for versions 1.5.0 and 2.0.0 of the NVG specification.
+The default NVG namespaces are supported for reading versions 1.4.0, 1.5.0 and 2.0.0. The reader suports version 1.4.0 of the schema.
+The code has been tested agains versions 1.5.0 and 2.0.0 however there are additional features added in 2.0.0 that have not yet been added. 
+These are the rect and orbit elements. Due to the limited use of version 2.0.0 at present the focus of the project will be adding write support for version 1.4.0 then full support for 1.5.0.
 
 ## Usage
 
