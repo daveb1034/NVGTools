@@ -1,5 +1,6 @@
 import arcpy, os
-import nvgReader as NVG
+import nvgReader
+import nvgWriter
 
 
 class Toolbox(object):
@@ -10,10 +11,10 @@ class Toolbox(object):
         self.alias = "nvg"
 
         # List of tool classes associated with this toolbox
-        self.tools = [loadNVG]
+        self.tools = [LoadNVG,WriteNVG]
 
 
-class loadNVG(object):
+class LoadNVG(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "Load NVG"
@@ -72,7 +73,7 @@ class loadNVG(object):
             # read the nvg file
             messages.addMessage("Reading features from: " + nvg)
 
-            reader = NVG.Reader(nvg)
+            reader = nvgReader.Reader(nvg)
             points,polylines,polygons,multipoints = reader.read()
 
             # this should be an attribute of the Reader Class
@@ -128,5 +129,63 @@ class loadNVG(object):
                         cursor.insertRow(multipoint)
 
                 del cursor
+
+        return
+
+
+class WriteNVG(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Write NVG"
+        self.description = """Writes features from 1 or more feature class into
+                              NVG version 1.4.0 file. The input features must be
+                              from the ComBAT Layer pack supplied with this tool
+                              to ensure that the features are loaded correctly."""
+        self.canRunInBackground = False
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        param0 = arcpy.Parameter(
+            displayName="Input Feature Class(es) File",
+            name="in_fcs",
+            datatype="GPFeatureLayer",
+            parameterType="Required",
+            direction="Input",
+            multiValue=True)
+        param1 = arcpy.Parameter(
+            displayName="Output NVG File",
+            name="outNVG",
+            datatype="DEFile",
+            parameterType="Required",
+            direction="Output")
+
+        param0.filter.list = ['Polygon','Polyline']
+        param1.filter.list = ['nvg']
+
+        params = [param0,param1]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        fcs = (parameters[0].valueAsText).split(';')
+        outFile = parameters[1].valueAsText
+
+        writer = nvgWriter.Writer()
+        writer.write(fcs,outFile,prettyXML=True)
 
         return
