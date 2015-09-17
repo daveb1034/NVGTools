@@ -6,11 +6,6 @@ NVGTools
 
 The NATO Vector Graphics format was developed as a means for NATO systems to share and use overlays. The format is based on SVG.
 
-### Whats New? ###
-
-The code for the reader is at point where a full scale these is required. With the exception of a, g and composite features which are supported by appending the parnet node of each feature in the attibutes.
-There is no direct equivalent feature type in ArcGIS. These features are used to group elements together.
-
 ## nvgReader.py ##
 
 Provides a means to read a nvg file and output feature classes to a file geodatabase.
@@ -47,7 +42,11 @@ The list returns the following attributes
 ```python
 >>> [<geometry>, 'uri', 'style', 'label', 'symbol', 'modifiers', 'course', 'speed', 'width', 'min_altitude', 'max_altitude', 'parenNode']
 ```
+## nvgWriter.py ##
 
+The writer requires the use of a layer pack that provides the correct values for writing the style tags. Further details are provided in the toolbox directory. Point features
+are not currently supported due to the need to implement APP6A and Mil2525B SIDCs in the layer packs to ensure a valid symbol tag. In addition a standard list of icons used by different C2 systems is
+required to enable the use on non military symbols.
 
 Each item will have one or more NVG features in a form ready to load into a feature class.
 ## Contributing ##
