@@ -6,6 +6,10 @@ NVGTools
 
 The NATO Vector Graphics format was developed as a means for NATO systems to share and use overlays. The format is based on SVG.
 
+## Update ##
+
+Apologies for the lack of progress on these tools. I have been diverted to other projects at work and also have a dissertation to finish. I am planning on getting back onto this late July so will provide updates then.
+
 ## nvgReader.py ##
 
 Provides a means to read a nvg file and output feature classes to a file geodatabase.
